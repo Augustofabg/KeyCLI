@@ -1,5 +1,6 @@
 package com.keyCLI01.Domain.Service;
 
+import com.keyCLI01.Domain.passwords.Password;
 import com.keyCLI01.Domain.passwords.PasswordRepository;
 import com.keyCLI01.Domain.vault_meta.VaultMeta;
 import com.keyCLI01.Domain.vault_meta.VaultMetaRepository;
@@ -10,6 +11,7 @@ import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 public class VaultService{
@@ -52,11 +54,50 @@ public class VaultService{
         if ("vault_ok".equals(decrypt)){
            sessionKey = deriveKey;
         } else {
-            throw new IllegalAccessException("Senha incorreta!");
+            throw new IllegalAccessException("Incorrect password!");
         }
 
     }
 
+    public void savePassword(String title, String username, String password, String email, String passkey) throws Exception{
+        if (sessionKey == null){
+            throw new Exception("locked!");
+        } else {
+           EncryptedData encryptPass = cryptoService.encrypt(password, sessionKey);
+           Password service = new Password(encryptPass.iv(), title, username, encryptPass.cipherText(), email, passkey);
+           passwordRepository.save(service);
+        }
+    }
 
+   public String getPassword(String title) throws Exception{
+        if (sessionKey == null){
+            throw new Exception("locked!");
+        }
+
+        Password vaultFind = passwordRepository.findByTitle(title).orElseThrow();
+        String decryptedPass = cryptoService.decrypt(vaultFind.getPassword(), vaultFind.getIv(), sessionKey);
+
+        return decryptedPass;
+
+   }
+
+   public void deletePassword(String title) throws Exception{
+        if (sessionKey == null){
+            throw new Exception("locked!");
+        }
+
+        Password vaultDelete = passwordRepository.findByTitle(title).orElseThrow();
+        passwordRepository.delete(vaultDelete);
+   }
+
+   public List<Password> listPassword() throws Exception{
+       if (sessionKey == null){
+           throw new Exception("locked!");
+       }
+
+       List<Password> vaulList = passwordRepository.findAll();
+       return vaulList;
+
+   }
 
 }

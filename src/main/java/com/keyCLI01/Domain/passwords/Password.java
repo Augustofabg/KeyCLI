@@ -29,7 +29,7 @@ public class Password {
 
         this.iv = iv;
         this.title = title;
-        this.username = this.username;
+        this.username = username;
         this.password = password;
         this.email = email;
         this.passkey = passkey;
