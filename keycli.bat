@@ -1,0 +1,3 @@
+@echo off
+echo Starting KeyCLI...
+java -jar target/0.1-0.0.1-SNAPSHOT.jar

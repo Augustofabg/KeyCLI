@@ -3,6 +3,7 @@ package com.keyCLI01.Domain.passwords;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Table (name = "passwords")
 @Entity (name = "passwords")
@@ -33,6 +34,10 @@ public class Password {
         this.password = password;
         this.email = email;
         this.passkey = passkey;
+    }
 
+    @Override
+    public String toString() {
+        return "Service: " + title + " | User: " + username + " | Email: " + email;
     }
 }
